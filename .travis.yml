@@ -3,7 +3,7 @@ services:
     - docker
 
 before_install:
-    - docker build -t chintandocker/react-test -f ./client/Dockerfile.dev .
+    - docker build -t chintandocker/react-test -f ./client/Dockerfile.dev ./client
 
 script:
     - docker run -e CI=true chintandocker/react-test npm test
@@ -13,3 +13,12 @@ after_success:
     - docker build -t chintandocker/multi-nginx ./nginx
     - docker build -t chintandocker/multi-server ./server
     - docker build -t chintandocker/multi-worker ./worker
+
+    # Log in to the Docker CLI
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+    # Push the images to docker-hub
+    - docker push chintandocker/multi-client
+    - docker push chintandocker/multi-nginx
+    - docker push chintandocker/multi-server
+    - docker push chintandocker/multi-worker
